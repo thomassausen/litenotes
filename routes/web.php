@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Notecontroller;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,12 +14,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get("/", function () {
+    return view("welcome");
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+Route::get("/dashboard", function () {
+    return view("dashboard");
+})
+    ->middleware(["auth"])
+    ->name("dashboard");
 
-require __DIR__.'/auth.php';
+Route::resource("/notes", Notecontroller::class)->middleware(["auth"]);
+
+require __DIR__ . "/auth.php";
