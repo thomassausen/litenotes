@@ -74,9 +74,12 @@ class Notecontroller extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Note $note)
     {
-        //
+        if ($note->user_id != Auth::id()) {
+            return abort(403);
+        }
+        return view("notes.edit")->with("note", $note);
     }
 
     /**
@@ -86,9 +89,22 @@ class Notecontroller extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Note $note)
     {
-        //
+        if ($note->user_id != Auth::id()) {
+            return abort(403);
+        }
+
+        $request->validate([
+            "title" => "required|max:120",
+            "text" => "required",
+        ]);
+
+        $note->update(["title" => $request->title, "text" => $request->text]);
+        return to_route("notes.show", $note)->with(
+            "success",
+            "Note updated successfully"
+        );
     }
 
     /**
@@ -97,8 +113,16 @@ class Notecontroller extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Note $note)
     {
-        //
+        if ($note->user_id != Auth::id()) {
+            return abort(403);
+        }
+
+        $note->delete();
+        return to_route("notes.index")->with(
+            "success",
+            "Note deleted successfully"
+        );
     }
 }
