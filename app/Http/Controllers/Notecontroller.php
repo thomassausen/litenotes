@@ -47,12 +47,14 @@ class Notecontroller extends Controller
             "text" => "required",
         ]);
 
-        Note::create([
-            "uuid" => Str::uuid(),
-            "user_id" => Auth::id(),
-            "title" => $request->title,
-            "text" => $request->text,
-        ]);
+        Auth::user()
+            ->notes()
+            ->create([
+                "uuid" => Str::uuid(),
+                "user_id" => Auth::id(),
+                "title" => $request->title,
+                "text" => $request->text,
+            ]);
         return to_route("notes.index");
     }
 
@@ -122,9 +124,6 @@ class Notecontroller extends Controller
         }
 
         $note->delete();
-        return to_route("notes.index")->with(
-            "success",
-            "Note deleted successfully"
-        );
+        return to_route("notes.index")->with("success", "Note moved to trash");
     }
 }
